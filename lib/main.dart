@@ -1,7 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'device_control_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -36,7 +37,6 @@ class _IoTControlScreenState extends State<IoTControlScreen> {
     _fetchInitialData();
   }
 
-  // 🔹 Fetch initial electricity state from REST API
   Future<void> _fetchInitialData() async {
     try {
       final response = await http.get(
@@ -53,10 +53,9 @@ class _IoTControlScreenState extends State<IoTControlScreen> {
     }
   }
 
-  // 🔹 Connect to WebSocket server using Socket.IO
   void _connectWebSocket() {
     socket = IO.io("https://sutharagriculture.onrender.com", <String, dynamic>{
-      "transports": ["websocket"],  // Force WebSocket connection
+      "transports": ["websocket"],
       "autoConnect": false,
     });
 
@@ -110,7 +109,6 @@ class _IoTControlScreenState extends State<IoTControlScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // 🔹 Electricity Status Indicator
             Text(
               "Electricity Status",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -139,15 +137,22 @@ class _IoTControlScreenState extends State<IoTControlScreen> {
               electricityState == "ON" ? "Active" : "Inactive",
               style: TextStyle(fontSize: 18, color: Colors.white70),
             ),
-
             SizedBox(height: 40),
-
-            // 🔹 Connection Status Indicator
             Text(
               isConnected ? "Connected ✅" : "Disconnected ❌",
               style: TextStyle(
                   fontSize: 16,
                   color: isConnected ? Colors.green : Colors.red),
+            ),
+            SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => DeviceControlScreen()),
+                );
+              },
+              child: Text("Manage Devices"),
             ),
           ],
         ),
